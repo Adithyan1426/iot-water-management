@@ -65,14 +65,32 @@
     const form = document.getElementById('profileForm');
     const successMsg = document.getElementById('successMsg');
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
+
       const formData = new FormData(form);
-      const profile = {};
-      formData.forEach((value, key) => profile[key] = value);
-      console.log('Profile Submitted:', profile);
-      successMsg.classList.remove('hidden');
-      form.reset();
+      const data = {};
+      formData.forEach((value, key) => (data[key] = value));
+
+      try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycbz2_E9UZASVUxcL-xCrberTPvdj0TvB46JJYYS5jh-85RPEF67efxuz4GWHDmZYPPD5pA/exec', {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (res.ok) {
+          successMsg.classList.remove('hidden');
+          form.reset();
+        } else {
+          alert("Error: Submission failed.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Network error. Try again later.");
+      }
     });
   </script>
 
